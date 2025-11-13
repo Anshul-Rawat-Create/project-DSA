@@ -5,6 +5,8 @@ from c_wrapper import enqueue_order, set_order_status, calculate_total_bill, sch
 from utils import is_premium_time_slot, current_timestamp
 import json
 import os
+from datetime import datetime,date
+
 
 app = Flask(__name__)
 app.secret_key = 'tabletrack_2025_secure_key'
@@ -93,7 +95,45 @@ def home():
 @login_required
 def user_account():
     user = User.query.filter_by(email=session['user_email']).first()
+    if not user:
+        return redirect(url_for('login'))  # ✅ fixed: 'login', not '/login'
     return render_template('user-account.html', user=user)
+
+@app.route('/current-bookings')
+@login_required
+def current_bookings():
+    user_email = session['user_email']
+    today = date.today().isoformat()
+    now_time = datetime.now().strftime("%H:%M")
+    bookings = Reservation.query.filter(
+        Reservation.user_email == user_email,
+        (Reservation.date > today) |
+        ((Reservation.date == today) & (Reservation.time >= now_time))
+    ).order_by(Reservation.date, Reservation.time).all()
+    return render_template('current-bookings.html', bookings=bookings)
+
+@app.route('/booking-history')
+@login_required
+def booking_history():
+    user_email = session['user_email']
+    today = date.today().isoformat()
+    now_time = datetime.now().strftime("%H:%M")
+    bookings = Reservation.query.filter(
+        Reservation.user_email == user_email,
+        (Reservation.date < today) |
+        ((Reservation.date == today) & (Reservation.time < now_time))
+    ).order_by(Reservation.date.desc(), Reservation.time.desc()).all()
+    return render_template('booking-history.html', bookings=bookings)
+
+@app.route('/cancel-booking/<int:booking_id>', methods=['POST'])
+@login_required
+def cancel_booking(booking_id):
+    booking = Reservation.query.filter_by(id=booking_id, user_email=session['user_email']).first()
+    if booking:
+        db.session.delete(booking)
+        db.session.commit()
+        flash("✅ Your table booking has been cancelled.")
+    return redirect(url_for('current_bookings'))
 
 @app.route('/upgrade-to-vip', methods=['POST'])
 @login_required

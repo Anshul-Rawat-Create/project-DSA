@@ -80,20 +80,42 @@
       text-align: center;
     }
 
-    .vip-btn {
-      background-color: #e74c3c;
-      color: white;
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
       border: none;
-      padding: 0.75rem 1.8rem;
-      font-size: 1.1rem;
-      font-weight: bold;
       border-radius: 5px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
       cursor: pointer;
       transition: background 0.3s;
     }
 
+    .vip-btn {
+      background-color: #e74c3c;
+      color: white;
+    }
+
     .vip-btn:hover {
       background-color: #c0392b;
+    }
+
+    .view-btn {
+      background-color: #3498db;
+      color: white;
+    }
+
+    .view-btn:hover {
+      background-color: #2980b9;
     }
 
     .status {
@@ -126,30 +148,45 @@
 
       <div class="info-group">
         <label>Full Name</label>
-        <span id="user-name">Anshul Rawat</span>
+        <span>{{ user.name }}</span>
       </div>
 
       <div class="info-group">
         <label>Email Address</label>
-        <span id="user-email">anshulrawat2007d6@gmail.com</span>
+        <span>{{ user.email }}</span>
       </div>
+
+      {% if user.phone %}
+      <div class="info-group">
+        <label>Phone</label>
+        <span>{{ user.phone }}</span>
+      </div>
+      {% endif %}
 
       <div class="info-group">
         <label>Account Type</label>
-        <span class="status" id="account-type">Standard</span>
+        <span class="status {% if user.is_vip %}vip{% endif %}">
+          {{ "VIP" if user.is_vip else "Standard" }}
+        </span>
       </div>
 
       <div class="vip-section">
-        <p>Enjoy faster service, priority seating, and exclusive offers!</p>
-        <form action="/upgrade-to-vip" method="POST" style="margin-top: 1rem;">
-          <button type="submit" class="vip-btn">Upgrade to VIP</button>
-        </form>
+        {% if not user.is_vip %}
+          <p>Enjoy faster service, priority seating, and exclusive offers!</p>
+          <form action="/upgrade-to-vip" method="POST" style="margin-top: 1rem;">
+            <button type="submit" class="vip-btn">Upgrade to VIP</button>
+          </form>
+        {% else %}
+          <p>✅ You are a VIP member! You enjoy priority service and exclusive benefits.</p>
+        {% endif %}
+      </div>
+
+      <div class="actions">
+        <a href="/current-bookings" class="btn view-btn">📅 Current Bookings</a>
+        <a href="/booking-history" class="btn view-btn">🗂️ Booking History</a>
       </div>
     </div>
   </div>
-
-  <!-- In a real app, these values would come from Flask (Jinja2) -->
-  <!-- Example: <span>{{ user.name }}</span> -->
 
 </body>
 </html>

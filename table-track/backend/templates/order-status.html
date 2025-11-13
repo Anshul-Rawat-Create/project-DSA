@@ -90,7 +90,7 @@
       height: 4px;
       background-color: #3498db;
       z-index: 2;
-      width: {{ progress_percent }}%; /* Set via Flask */
+      width: 0%;
       transition: width 0.5s ease;
     }
 
@@ -130,6 +130,16 @@
       color: #2980b9;
     }
 
+    .completion-message {
+      background: #d4edda;
+      color: #155724;
+      padding: 1.2rem;
+      border-radius: 8px;
+      margin-top: 1.5rem;
+      font-weight: bold;
+      display: none;
+    }
+
     .refresh-note {
       margin-top: 1.5rem;
       font-size: 0.9rem;
@@ -160,10 +170,10 @@
       <div class="progress-container">
         <div class="progress-steps">
           <div class="progress-bar" id="progressBar"></div>
-          <div class="step {% if current_step >= 1 %}active{% endif %}">1</div>
-          <div class="step {% if current_step >= 2 %}active{% endif %}">2</div>
-          <div class="step {% if current_step >= 3 %}active{% endif %}">3</div>
-          <div class="step {% if current_step >= 4 %}active{% endif %}">4</div>
+          <div class="step" id="step1">1</div>
+          <div class="step" id="step2">2</div>
+          <div class="step" id="step3">3</div>
+          <div class="step" id="step4">4</div>
         </div>
         <div style="display: flex; justify-content: space-between; padding: 0 10px;">
           <span class="step-label">Confirmed</span>
@@ -174,7 +184,11 @@
       </div>
 
       <div class="status-info" id="statusText">
-        {% if current_step == 1 %}Order confirmed – added to queue.{% elif current_step == 2 %}Kitchen is preparing your order.{% elif current_step == 3 %}Your food is now cooking!{% elif current_step == 4 %}🎉 Your order is ready! Please collect it at the counter.{% else %}No active order.{% endif %}
+        Order confirmed – added to queue.
+      </div>
+
+      <div class="completion-message" id="completionMsg">
+        🎉 Your order is ready! Please collect it at the counter.
       </div>
 
       <p class="refresh-note">
@@ -188,11 +202,52 @@
   </footer>
 
   <script>
-    // Optional: auto-refresh logic (for real-time polling)
-    // In production, replace with WebSocket or AJAX polling to /api/order-status
-    setTimeout(() => {
-      // Example: window.location.reload();
+    // Simulation logic – replaces static Jinja2 for demo
+    let currentStep = 1;
+    const totalSteps = 4;
+    const stepMessages = [
+      "Order confirmed – added to queue.",
+      "Kitchen is preparing your order.",
+      "Your food is now cooking!",
+      "🎉 Your order is ready! Please collect it at the counter."
+    ];
+
+    function updateUI() {
+      // Activate steps
+      for (let i = 1; i <= totalSteps; i++) {
+        const el = document.getElementById(`step${i}`);
+        if (i <= currentStep) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      }
+
+      // Update progress bar
+      const percent = currentStep === 1 ? 0 : ((currentStep - 1) / (totalSteps - 1)) * 100;
+      document.getElementById('progressBar').style.width = `${percent}%`;
+
+      // Update status text
+      document.getElementById('statusText').textContent = stepMessages[currentStep - 1];
+
+      // Show completion message at final step
+      if (currentStep === totalSteps) {
+        document.getElementById('completionMsg').style.display = 'block';
+      }
+    }
+
+    // Auto-advance every 10 seconds
+    const interval = setInterval(() => {
+      if (currentStep < totalSteps) {
+        currentStep++;
+        updateUI();
+      } else {
+        clearInterval(interval);
+      }
     }, 10000);
+
+    // Initial render
+    updateUI();
   </script>
 
 </body>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Current Bookings – Table-Track</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { background: #f8f9fa; color: #333; }
+    nav { background: #2c3e50; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .logo { color: white; font-size: 1.5rem; font-weight: bold; }
+    .nav-links a { color: #ecf0f1; text-decoration: none; font-weight: 600; }
+    .container { max-width: 600px; margin: 2rem auto; padding: 0 1.5rem; }
+    .card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .card h2 { margin-bottom: 1.5rem; color: #2c3e50; }
+    .booking-item { padding: 1rem 0; border-bottom: 1px solid #eee; }
+    .booking-item:last-child { border-bottom: none; }
+    .booking-date { font-weight: bold; color: #2c3e50; }
+    .cancel-btn {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 0.4rem;
+      font-size: 0.95rem;
+    }
+    .cancel-btn:hover { background: #c0392b; }
+    .empty { text-align: center; color: #7f8c8d; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="logo">Table-Track</div>
+    <div class="nav-links">
+      <a href="/user-account">← Back to Account</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <h2>Current Bookings</h2>
+
+      {% if bookings %}
+        {% for b in bookings %}
+          <div class="booking-item">
+            <div class="booking-date">{{ b.date }} at {{ b.time }}</div>
+            <form action="/cancel-booking/{{ b.id }}" method="POST" style="display:inline;">
+              <button type="submit" class="cancel-btn">Cancel Booking</button>
+            </form>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="empty">No upcoming table bookings.</p>
+      {% endif %}
+    </div>
+  </div>
+
+</body>
+</html>
