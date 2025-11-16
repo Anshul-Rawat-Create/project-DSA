@@ -51,7 +51,7 @@
         <button type="submit" class="btn">Pay Now</button>
       </form>
 
-      <a href="{{ url_for(next_action.split('?')[0]) if '?' in next_action else url_for(next_action) }}" class="cancel">← Cancel</a>
+      <a href="{{ request.args.get('cancel_url', '/home') }}" class="cancel">← Cancel</a>
     </div>
   </div>
 

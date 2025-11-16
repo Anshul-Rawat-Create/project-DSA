@@ -138,16 +138,6 @@ def cancel_booking(booking_id):
         flash("✅ Your table booking has been cancelled.")
     return redirect(url_for('current_bookings'))
 
-@app.route('/upgrade-to-vip', methods=['POST'])
-@login_required
-def upgrade_to_vip():
-    user = User.query.filter_by(email=session['user_email']).first()
-    if not user.is_vip:
-        user.is_vip = True
-        session['is_vip'] = True
-        db.session.commit()
-        flash("✅ You are now a VIP member! Enjoy priority service.")
-    return redirect(url_for('user_account'))
 
 @app.route('/book-table', methods=['GET', 'POST'])
 @login_required
@@ -284,12 +274,13 @@ def process_payment():
     flash("✅ Payment successful!")
 
     try:
-        if next_action == 'upgrade_vip':
+        if next_action == 'upgrade_to_vip':
             user = User.query.filter_by(email=session['user_email']).first()
             if user:
                 user.is_vip = True
-                db.session.commit()
+                db.session.commit()  # ✅ Save to database
                 session['is_vip'] = True
+                flash("✅ You are now a VIP member! Enjoy priority service.")
             return redirect(url_for('user_account'))
 
         elif next_action == 'confirm_booking':
