@@ -15,6 +15,9 @@ lib.init_food_status_map()
 lib.enqueue_order.argtypes = [c_int, c_int]
 lib.dequeue_next_order.restype = c_int
 lib.get_next_order_id.restype = c_int
+lib.get_vip_upgrade_fee.restype = c_float
+lib.get_table_reservation_fee.argtypes = [c_int]
+lib.get_table_reservation_fee.restype = c_float
 
 # --- Reservation Heap ---
 lib.schedule_reservation.argtypes = [c_int, c_long]

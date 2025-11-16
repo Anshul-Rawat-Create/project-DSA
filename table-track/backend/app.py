@@ -1,7 +1,7 @@
 # app.py
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from models import db, User, MenuItem, Order, Reservation
-from c_wrapper import enqueue_order, set_order_status, calculate_total_bill, schedule_reservation
+from c_wrapper import enqueue_order, set_order_status, calculate_total_bill, schedule_reservation,lib
 from utils import is_premium_time_slot, current_timestamp
 import json
 import os
@@ -96,8 +96,11 @@ def home():
 def user_account():
     user = User.query.filter_by(email=session['user_email']).first()
     if not user:
-        return redirect(url_for('login'))  # ✅ fixed: 'login', not '/login'
-    return render_template('user-account.html', user=user)
+        return redirect(url_for('login'))
+    
+    vip_fee = lib.get_vip_upgrade_fee()
+    
+    return render_template('user-account.html', user=user, vip_fee=vip_fee)
 
 @app.route('/current-bookings')
 @login_required
@@ -155,21 +158,36 @@ def book_table():
         booking_time = request.form['time']
         
         is_premium = is_premium_time_slot(booking_time)
-        
-        reservation = Reservation(
-            user_email=session['user_email'],
-            date=booking_date,
-            time=booking_time,
-            is_premium_slot=is_premium
-        )
-        db.session.add(reservation)
-        db.session.commit()
-        
-        # Schedule in C heap
-        schedule_reservation(reservation.id, current_timestamp())
-        
-        flash(f"✅ Table reserved for {booking_date} at {booking_time}!")
-        return redirect(url_for('home'))
+        fee = lib.get_table_reservation_fee(int(is_premium))  # ← Get fee from C module
+
+        # Prepare metadata to pass through payment
+        metadata = json.dumps({
+            "date": booking_date,
+            "time": booking_time,
+            "is_premium": is_premium
+        })
+
+        if fee > 0:
+            # Redirect to payment page
+            return redirect(url_for('payment_page',
+                amount=fee,
+                description=f"Table Reservation on {booking_date} at {booking_time}",
+                next_action='confirm_booking',
+                metadata=metadata
+            ))
+        else:
+            # Free booking: create directly
+            reservation = Reservation(
+                user_email=session['user_email'],
+                date=booking_date,
+                time=booking_time,
+                is_premium_slot=is_premium
+            )
+            db.session.add(reservation)
+            db.session.commit()
+            schedule_reservation(reservation.id, current_timestamp())
+            flash(f"✅ Table reserved for {booking_date} at {booking_time}!")
+            return redirect(url_for('home'))
     
     return render_template('book-table.html', min_date=date.today().isoformat())
 
@@ -183,10 +201,15 @@ def view_menu():
 @login_required
 def place_order():
     user = User.query.filter_by(email=session['user_email']).first()
+    if not user:
+        flash("User not found.")
+        return redirect(url_for('login'))
+
     selected_items = []
     food_prices = []
     quantities = []
-    
+
+    # Parse selected menu items
     for key, qty in request.form.items():
         if key.startswith('qty_') and qty.isdigit() and int(qty) > 0:
             item_id = int(key.replace('qty_', ''))
@@ -195,31 +218,29 @@ def place_order():
                 selected_items.append({"id": item_id, "qty": int(qty)})
                 food_prices.append(float(menu_item.price))
                 quantities.append(int(qty))
-    
+
     if not selected_items:
         flash("Please select at least one item.")
         return redirect(url_for('view_menu'))
-    
-    # Calculate total bill (assume no VIP upgrade in this flow)
-    is_premium_slot = False  # Could link to active reservation if needed
-    total = calculate_total_bill(food_prices, quantities, is_premium_slot, False)
-    
-    # Save order
-    order = Order(
-        user_email=user.email,
-        items=json.dumps(selected_items),
-        total_price=total,
-        status=1  # Confirmed
-    )
-    db.session.add(order)
-    db.session.commit()
-    
-    # Enqueue in C
-    enqueue_order(order.id, user.is_vip)
-    set_order_status(order.id, 1)
-    
-    flash(f"✅ Order placed! Total: ₹{total:.2f}")
-    return redirect(url_for('order_status'))
+
+    # Calculate total using C billing module
+    is_premium_slot = False  # You can link to active reservation later if needed
+    include_vip_fee = False  # VIP fee is handled separately
+    total = calculate_total_bill(food_prices, quantities, is_premium_slot, include_vip_fee)
+
+    # Prepare metadata to pass to payment page
+    metadata = {
+        "items": selected_items,
+        "user_email": user.email,
+        "is_vip": user.is_vip
+    }
+
+    # Redirect to payment page
+    return redirect(url_for('payment_page',
+                            amount=total,
+                            description="Food Order Payment",
+                            next_action='place_food_order',
+                            metadata=json.dumps(metadata)))
 
 @app.route('/order-status')
 @login_required
@@ -234,6 +255,77 @@ def order_status():
         progress_percent = 100 if current_step == 4 else (current_step - 1) * 33.33
     
     return render_template('order-status.html', current_step=current_step, progress_percent=progress_percent)
+
+@app.route('/payment')
+@login_required
+def payment_page():
+    amount = float(request.args.get('amount', 0))
+    description = request.args.get('description', 'Payment')
+    next_action = request.args.get('next_action', 'home')
+    metadata = request.args.get('metadata', '')
+    return render_template('payment.html', 
+                          amount=amount, 
+                          description=description, 
+                          next_action=next_action,
+                          metadata=metadata)
+
+@app.route('/process-payment', methods=['POST'])
+@login_required
+def process_payment():
+    next_action = request.form.get('next_action')
+    metadata_str = request.form.get('metadata', '{}')
+    
+    # Safe JSON parsing
+    try:
+        metadata = json.loads(metadata_str)
+    except (ValueError, TypeError):
+        metadata = {}
+
+    flash("✅ Payment successful!")
+
+    try:
+        if next_action == 'upgrade_vip':
+            user = User.query.filter_by(email=session['user_email']).first()
+            if user:
+                user.is_vip = True
+                db.session.commit()
+                session['is_vip'] = True
+            return redirect(url_for('user_account'))
+
+        elif next_action == 'confirm_booking':
+            res = Reservation(
+                user_email=session['user_email'],
+                date=metadata.get('date'),
+                time=metadata.get('time'),
+                is_premium_slot=metadata.get('is_premium', False)
+            )
+            db.session.add(res)
+            db.session.commit()
+            schedule_reservation(res.id, current_timestamp())
+            return redirect(url_for('home'))
+
+        elif next_action == 'place_food_order':
+            order = Order(
+                user_email=session['user_email'],
+                items=json.dumps(metadata.get('items', [])),
+                total_price=float(request.form.get('amount', 0)),
+                status=1
+            )
+            db.session.add(order)
+            db.session.commit()
+            # Use is_vip from metadata if available, else session
+            is_vip = metadata.get('is_vip', session.get('is_vip', False))
+            enqueue_order(order.id, is_vip)
+            set_order_status(order.id, 1)
+            return redirect(url_for('order_status'))
+
+        else:
+            return redirect(url_for('home'))
+            
+    except Exception as e:
+        db.session.rollback()
+        flash("⚠️ Payment succeeded, but order saving failed. Please contact support.")
+        return redirect(url_for('home'))
 
 @app.route('/logout')
 def logout():

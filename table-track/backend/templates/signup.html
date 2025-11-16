@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sign Up – Table-Track</title>
   <style>
+    :root {
+      --primary-dark-green: #0F7458;
+      --primary-light-green: #1ABC9C;
+      --primary-gradient: linear-gradient(to right, #0F7458, #1ABC9C);
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -12,7 +18,7 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     body {
-      background-color: #f4f6f9;
+      background-color: #f8f9fa;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -51,7 +57,7 @@
     .btn {
       width: 100%;
       padding: 0.8rem;
-      background-color: #2ecc71;
+      background: var(--primary-gradient);
       color: white;
       border: none;
       border-radius: 5px;
@@ -61,7 +67,7 @@
       transition: background 0.3s;
     }
     .btn:hover {
-      background-color: #27ae60;
+      background-color: var(--primary-dark-green);
     }
     .links {
       text-align: center;
@@ -69,7 +75,7 @@
       font-size: 0.95rem;
     }
     .links a {
-      color: #3498db;
+      color: #0F7458;
       text-decoration: none;
     }
     .links a:hover {
