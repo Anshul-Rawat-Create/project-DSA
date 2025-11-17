@@ -1,4 +1,3 @@
-# app.py
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from models import db, User, MenuItem, Order, Reservation
 from c_wrapper import enqueue_order, set_order_status, calculate_total_bill, schedule_reservation,lib
