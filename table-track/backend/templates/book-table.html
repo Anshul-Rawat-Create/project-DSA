@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Book a Table – Table-Track</title>
   <style>
+    :root {
+      --primary-dark-green: #0F7458;
+      --primary-light-green: #1ABC9C;
+      --primary-gradient: linear-gradient(to right, #0F7458, #1ABC9C);
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -18,7 +24,7 @@
     }
 
     nav {
-      background-color: #2c3e50;
+      background-color: var(--primary-dark-green);
       padding: 0.8rem 2rem;
       display: flex;
       justify-content: space-between;
@@ -59,7 +65,7 @@
     .card h2 {
       text-align: center;
       margin-bottom: 1.5rem;
-      color: #2c3e50;
+      color: var(--primary-dark-green);
     }
 
     .form-group {
@@ -84,7 +90,7 @@
     .btn {
       width: 100%;
       padding: 0.8rem;
-      background-color: #3498db;
+      background: var(--primary-gradient);
       color: white;
       border: none;
       border-radius: 5px;
@@ -95,7 +101,7 @@
     }
 
     .btn:hover {
-      background-color: #2980b9;
+      background-color: var(--primary-dark-green);
     }
 
     .info {

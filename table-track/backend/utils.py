@@ -1,4 +1,3 @@
-# utils.py
 from datetime import datetime
 
 def is_premium_time_slot(time_str: str) -> bool:
@@ -7,7 +6,7 @@ def is_premium_time_slot(time_str: str) -> bool:
     """
     try:
         hour = int(time_str.split(':')[0])
-        return 19 <= hour <= 21  # inclusive
+        return 19 <= hour <= 21 #opening time
     except:
         return False
 

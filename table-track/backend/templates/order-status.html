@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Order Status – Table-Track</title>
   <style>
+    :root {
+      --primary-dark-green: #0F7458;
+      --primary-light-green: #1ABC9C;
+      --primary-gradient: linear-gradient(to right, #0F7458, #1ABC9C);
+      --light-green-bg: #e8f5e9;
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -18,7 +25,7 @@
     }
 
     nav {
-      background-color: #2c3e50;
+      background-color: var(--primary-dark-green);
       padding: 0.8rem 2rem;
       display: flex;
       justify-content: space-between;
@@ -59,7 +66,7 @@
 
     h2 {
       margin-bottom: 1.5rem;
-      color: #2c3e50;
+      color: var(--primary-dark-green);
     }
 
     /* Progress bar container */
@@ -93,7 +100,7 @@
       left: 0;
       transform: translateY(-50%);
       height: 4px;
-      background-color: #3498db;
+      background-color: var(--primary-dark-green);
       z-index: 2;
       width: 0%;
       transition: width 0.5s ease;
@@ -115,9 +122,9 @@
     }
 
     .step.active {
-      border-color: #3498db;
-      color: #3498db;
-      background: #eaf5ff;
+      border-color: var(--primary-dark-green);
+      color: var(--primary-dark-green);
+      background: var(--light-green-bg);
     }
 
     .step-label {
@@ -129,10 +136,10 @@
     .status-info {
       margin-top: 2rem;
       padding: 1rem;
-      background: #f1f9ff;
+      background: var(--light-green-bg);
       border-radius: 8px;
       font-size: 1.1rem;
-      color: #2980b9;
+      color: var(--primary-dark-green);
     }
 
     .completion-message {
@@ -210,7 +217,7 @@
   </footer>
 
   <script>
-    // Simulation logic – replaces static Jinja2 for demo
+    // Simulation logic
     let currentStep = 1;
     const totalSteps = 4;
     const stepMessages = [

@@ -1,4 +1,3 @@
-# c_wrapper.py
 from ctypes import cdll, c_int, c_float, c_long, c_char_p, POINTER, c_bool
 import os
 
