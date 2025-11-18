@@ -1,269 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Order Status – Table-Track</title>
-  <style>
-    :root {
-      --primary-dark-green: #0F7458;
-      --primary-light-green: #1ABC9C;
-      --primary-gradient: linear-gradient(to right, #0F7458, #1ABC9C);
-      --light-green-bg: #e8f5e9;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Status – Table-Track</title>
+    <style>
+      :root {
+        --primary-dark-green: #0f7458;
+        --primary-light-green: #1abc9c;
+        --primary-gradient: linear-gradient(to right, #0f7458, #1abc9c);
+        --light-green-bg: #e8f5e9;
+      }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
 
-    body {
-      background-color: #f8f9fa;
-      color: #333;
-    }
+      body {
+        background-color: #f8f9fa;
+        color: #333;
+      }
 
-    nav {
-      background-color: var(--primary-dark-green);
-      padding: 0.8rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
+      nav {
+        background-color: var(--primary-dark-green);
+        padding: 0.8rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
 
-    .logo {
-      color: white;
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
+      .logo {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
 
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-    }
+      .nav-links {
+        display: flex;
+        gap: 1.5rem;
+      }
 
-    .nav-links a {
-      color: #ecf0f1;
-      text-decoration: none;
-      font-weight: 600;
-    }
+      .nav-links a {
+        color: #ecf0f1;
+        text-decoration: none;
+        font-weight: 600;
+      }
 
-    .container {
-      max-width: 700px;
-      margin: 3rem auto;
-      padding: 0 1.5rem;
-    }
+      .container {
+        max-width: 700px;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+      }
 
-    .card {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      text-align: center;
-    }
+      .card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        text-align: center;
+      }
 
-    h2 {
-      margin-bottom: 1.5rem;
-      color: var(--primary-dark-green);
-    }
+      h2 {
+        margin-bottom: 1.5rem;
+        color: var(--primary-dark-green);
+      }
 
-    /* Progress bar container */
-    .progress-container {
-      margin: 2rem auto;
-      max-width: 600px;
-    }
+      /* Progress bar container */
+      .progress-container {
+        margin: 2rem auto;
+        max-width: 600px;
+      }
 
-    .progress-steps {
-      display: flex;
-      justify-content: space-between;
-      position: relative;
-      margin-bottom: 2rem;
-    }
+      .progress-steps {
+        display: flex;
+        justify-content: space-between;
+        position: relative;
+        margin-bottom: 2rem;
+      }
 
-    .progress-steps::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-      height: 4px;
-      width: 100%;
-      background-color: #ecf0f1;
-      z-index: 1;
-    }
+      .progress-steps::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        height: 4px;
+        width: 100%;
+        background-color: #ecf0f1;
+        z-index: 1;
+      }
 
-    .progress-bar {
-      position: absolute;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-      height: 4px;
-      background-color: var(--primary-dark-green);
-      z-index: 2;
-      width: 0%;
-      transition: width 0.5s ease;
-    }
+      .progress-bar {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        height: 4px;
+        background-color: var(--primary-dark-green);
+        z-index: 2;
+        width: 0%;
+        transition: width 0.5s ease;
+      }
 
-    .step {
-      position: relative;
-      z-index: 3;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      background: white;
-      border: 3px solid #bdc3c7;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #bdc3c7;
-    }
+      .step {
+        position: relative;
+        z-index: 3;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: white;
+        border: 3px solid #bdc3c7;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: #bdc3c7;
+      }
 
-    .step.active {
-      border-color: var(--primary-dark-green);
-      color: var(--primary-dark-green);
-      background: var(--light-green-bg);
-    }
+      .step.active {
+        border-color: var(--primary-dark-green);
+        color: var(--primary-dark-green);
+        background: var(--light-green-bg);
+      }
 
-    .step-label {
-      margin-top: 0.5rem;
-      font-size: 0.85rem;
-      color: #7f8c8d;
-    }
+      .step-label {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: #7f8c8d;
+      }
 
-    .status-info {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: var(--light-green-bg);
-      border-radius: 8px;
-      font-size: 1.1rem;
-      color: var(--primary-dark-green);
-    }
+      .status-info {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: var(--light-green-bg);
+        border-radius: 8px;
+        font-size: 1.1rem;
+        color: var(--primary-dark-green);
+      }
 
-    .completion-message {
-      background: #d4edda;
-      color: #155724;
-      padding: 1.2rem;
-      border-radius: 8px;
-      margin-top: 1.5rem;
-      font-weight: bold;
-      display: none;
-    }
+      .completion-message {
+        background: #d4edda;
+        color: #155724;
+        padding: 1.2rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        font-weight: bold;
+        display: none;
+      }
 
-    .refresh-note {
-      margin-top: 1.5rem;
-      font-size: 0.9rem;
-      color: #7f8c8d;
-    }
+      .refresh-note {
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+        color: #7f8c8d;
+      }
 
-    footer {
-      text-align: center;
-      margin-top: 2rem;
-      padding: 1rem;
-      color: #7f8c8d;
-    }
-  </style>
-</head>
-<body>
+      footer {
+        text-align: center;
+        margin-top: 2rem;
+        padding: 1rem;
+        color: #7f8c8d;
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <div class="logo">Table-Track</div>
+      <div class="nav-links">
+        <a href="/book-table">Book Table</a>
+        <a href="/view-menu">View Menu</a>
+        <a href="/user-account">User Account</a>
+        <a href="/order-status">Order Status</a>
+      </div>
+    </nav>
 
-  <nav>
-    <div class="logo">Table-Track</div>
-    <div class="nav-links">
-      <a href="/book-table">Book Table</a>
-      <a href="/view-menu">View Menu</a>
-      <a href="/user-account">User Account</a>
-      <a href="/order-status">Order Status</a>
-    </div>
-  </nav>
+    <div class="container">
+      <div class="card">
+        <h2>Your Order Status</h2>
 
-  <div class="container">
-    <div class="card">
-      <h2>Your Order Status</h2>
-
-      <div class="progress-container">
-        <div class="progress-steps">
-          <div class="progress-bar" id="progressBar"></div>
-          <div class="step" id="step1">1</div>
-          <div class="step" id="step2">2</div>
-          <div class="step" id="step3">3</div>
-          <div class="step" id="step4">4</div>
+        <div class="progress-container">
+          <div class="progress-steps">
+            <div class="progress-bar" id="progressBar"></div>
+            <div class="step" id="step1">1</div>
+            <div class="step" id="step2">2</div>
+            <div class="step" id="step3">3</div>
+            <div class="step" id="step4">4</div>
+          </div>
+          <div
+            style="
+              display: flex;
+              justify-content: space-between;
+              padding: 0 10px;
+            "
+          >
+            <span class="step-label">Confirmed</span>
+            <span class="step-label">Preparing</span>
+            <span class="step-label">Cooking</span>
+            <span class="step-label">Ready!</span>
+          </div>
         </div>
-        <div style="display: flex; justify-content: space-between; padding: 0 10px;">
-          <span class="step-label">Confirmed</span>
-          <span class="step-label">Preparing</span>
-          <span class="step-label">Cooking</span>
-          <span class="step-label">Ready!</span>
+
+        <div class="status-info" id="statusText">
+          Order confirmed – added to queue.
         </div>
-      </div>
 
-      <div class="status-info" id="statusText">
-        Order confirmed – added to queue.
-      </div>
+        <div class="completion-message" id="completionMsg">
+          🎉 Your order is ready! Please collect it at the counter.
+        </div>
 
-      <div class="completion-message" id="completionMsg">
-        🎉 Your order is ready! Please collect it at the counter.
+        <p class="refresh-note">
+          Status updates automatically every 10 seconds.
+        </p>
       </div>
-
-      <p class="refresh-note">
-        Status updates automatically every 10 seconds.
-      </p>
     </div>
-  </div>
 
-  <footer>
-    Table-Track ensures fair, transparent, and efficient service for every guest.
-  </footer>
+    <footer>
+      Table-Track ensures fair, transparent, and efficient service for every
+      guest.
+    </footer>
 
-  <script>
-    // Simulation logic
-    let currentStep = 1;
-    const totalSteps = 4;
-    const stepMessages = [
-      "Order confirmed – added to queue.",
-      "Kitchen is preparing your order.",
-      "Your food is now cooking!",
-      "🎉 Your order is ready! Please collect it at the counter."
-    ];
+    <script>
+      // Simulation logic
+      let currentStep = 1;
+      const totalSteps = 4;
+      const stepMessages = [
+        "Order confirmed – added to queue.",
+        "Kitchen is preparing your order.",
+        "Your food is now cooking!",
+        "🎉 Your order is ready! Please collect it at the counter.",
+      ];
 
-    function updateUI() {
-      // Activate steps
-      for (let i = 1; i <= totalSteps; i++) {
-        const el = document.getElementById(`step${i}`);
-        if (i <= currentStep) {
-          el.classList.add('active');
-        } else {
-          el.classList.remove('active');
+      function updateUI() {
+        // Activate steps
+        for (let i = 1; i <= totalSteps; i++) {
+          const el = document.getElementById(`step${i}`);
+          if (i <= currentStep) {
+            el.classList.add("active");
+          } else {
+            el.classList.remove("active");
+          }
+        }
+
+        // Update progress bar
+        const percent =
+          currentStep === 1 ? 0 : ((currentStep - 1) / (totalSteps - 1)) * 100;
+        document.getElementById("progressBar").style.width = `${percent}%`;
+
+        // Update status text
+        document.getElementById("statusText").textContent =
+          stepMessages[currentStep - 1];
+
+        // Show completion message at final step
+        if (currentStep === totalSteps) {
+          document.getElementById("completionMsg").style.display = "block";
         }
       }
 
-      // Update progress bar
-      const percent = currentStep === 1 ? 0 : ((currentStep - 1) / (totalSteps - 1)) * 100;
-      document.getElementById('progressBar').style.width = `${percent}%`;
+      // Auto-advance every 10 seconds
+      const interval = setInterval(() => {
+        if (currentStep < totalSteps) {
+          currentStep++;
+          updateUI();
+        } else {
+          clearInterval(interval);
+        }
+      }, 10000);
 
-      // Update status text
-      document.getElementById('statusText').textContent = stepMessages[currentStep - 1];
-
-      // Show completion message at final step
-      if (currentStep === totalSteps) {
-        document.getElementById('completionMsg').style.display = 'block';
-      }
-    }
-
-    // Auto-advance every 10 seconds
-    const interval = setInterval(() => {
-      if (currentStep < totalSteps) {
-        currentStep++;
-        updateUI();
-      } else {
-        clearInterval(interval);
-      }
-    }, 10000);
-
-    // Initial render
-    updateUI();
-  </script>
-
-</body>
+      // Initial render
+      updateUI();
+    </script>
+  </body>
 </html>
